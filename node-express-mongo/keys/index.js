@@ -1,7 +1,6 @@
 module.exports = {
-  MONGODB_URI:
-    'mongodb+srv://sasha:q3Q2uLPFdGPet0va@cluster0-xzbk4.mongodb.net/shop',
-  SESSION_SECRET: 'some secret value',
+  MONGODB_URI: process.env.MONGODB_URI,
+  SESSION_SECRET: process.env.MONGODB_SECRET_KEY,
   EMAIL_FROM: 'nodejs-course@wfm.ru',
-  BASE_URL: 'http://localhost:3000'
+  BASE_URL: 'http://localhost:3000',
 }
