@@ -9,8 +9,8 @@ const regEmail = require('../emails/registration')
 var transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'sashanesasha1991@gmail.com',
-    pass: 'nesasha1991',
+    user: process.env.SENDER_EMAIL,
+    pass: process.env.SENDER_PASS,
   },
 })
 
