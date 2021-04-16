@@ -6,7 +6,7 @@ module.exports = function (email) {
     from: keys.EMAIL_FROM,
     subject: 'Аккаунт создан',
     html: `
-      <h1Добро пожаловать в наш магазин</h1>
+      <h1>Добро пожаловать в наш магазин</h1>
       <p>Вы успешно создали акаунт</p>
       <span>${email}</span>
       <hr />
