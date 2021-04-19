@@ -2,7 +2,9 @@ const { Router } = require('express')
 const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
 const nodemailer = require('nodemailer')
+const { validationResult } = require('express-validator')
 const router = Router()
+const { registerValidators } = require('../utils/validators')
 
 const User = require('../models/user')
 const regEmail = require('../emails/registration')
@@ -64,32 +66,33 @@ router.post('/login', async (req, res) => {
   }
 })
 
-router.post('/register', async (req, res) => {
+router.post('/register', registerValidators, async (req, res) => {
   try {
-    const { email, password, repeat, name } = req.body
-    const candidate = await User.findOne({ email })
+    const { email, password, name } = req.body
 
-    if (candidate) {
-      req.flash('registerError', 'Пользователь с таким email уже существует')
-      res.redirect('/auth/login#register')
-    } else {
-      const hashPassword = await bcrypt.hash(password, 10)
-      const user = new User({
-        email,
-        name,
-        password: hashPassword,
-        cart: { items: [] },
-      })
-      await user.save()
-      res.redirect('/auth/login#login')
-      await transporter.sendMail(regEmail(email), function (error, info) {
-        if (error) {
-          console.log('Email error', error)
-        } else {
-          console.log('Email sent: ' + info.response)
-        }
-      })
+    const errors = validationResult(req)
+
+    if (!errors.isEmpty()) {
+      req.flash('registerError', errors.array()[0].msg)
+      return res.status(422).redirect('/auth/login#register')
     }
+
+    const hashPassword = await bcrypt.hash(password, 10)
+    const user = new User({
+      email,
+      name,
+      password: hashPassword,
+      cart: { items: [] },
+    })
+    await user.save()
+    res.redirect('/auth/login#login')
+    await transporter.sendMail(regEmail(email), function (error, info) {
+      if (error) {
+        console.log('Email error', error)
+      } else {
+        console.log('Email sent: ' + info.response)
+      }
+    })
   } catch (e) {
     console.log(e)
   }
