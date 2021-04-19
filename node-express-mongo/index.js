@@ -16,9 +16,12 @@ const addRoutes = require('./routes/add')
 const ordersRoutes = require('./routes/orders')
 const coursesRoutes = require('./routes/courses')
 const authRoutes = require('./routes/auth')
+const profileRoutes = require('./routes/profile')
 // const User = require('./models/user')
 const varMiddleware = require('./middleware/variable')
 const userMiddleware = require('./middleware/user')
+const errorHandlerModdleware = require('./middleware/error')
+const fileMiddleware = require('./middleware/file')
 const keys = require('./keys')
 
 // const MONGODB_URI =
@@ -53,6 +56,7 @@ app.set('views', 'views')
 // })
 
 app.use(express.static(path.join(__dirname, 'public')))
+app.use('/images', express.static(path.join(__dirname, 'images')))
 app.use(express.urlencoded({ extended: false }))
 app.use(
   session({
@@ -62,6 +66,7 @@ app.use(
     store,
   }),
 )
+app.use(fileMiddleware.single('avatar'))
 app.use(csrf())
 app.use(flash())
 app.use(varMiddleware)
@@ -73,6 +78,9 @@ app.use('/card', cardRoutes)
 app.use('/courses', coursesRoutes)
 app.use('/orders', ordersRoutes)
 app.use('/auth', authRoutes)
+app.use('/profile', profileRoutes)
+
+app.use(errorHandlerModdleware)
 
 const PORT = process.env.PROT || 3000
 
